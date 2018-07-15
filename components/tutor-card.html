@@ -1,0 +1,74 @@
+<template id="template">
+    <style>
+        :host {
+            all: initial;
+            padding: 5px;
+        }
+        :host h3 {
+            margin: 0;
+        }
+        :host div {
+            padding: 10px;
+            border: 1px solid #ddd;
+            display: inline-block;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s all;
+        }
+
+        :host div:hover{
+            background-color: #f0f0f0;
+        }
+    </style>
+    <div>
+        <h3 class="nome"></h3>
+        <small class="escola"></small>
+    </div>
+</template>
+
+<script type="text/javascript">
+class TutorCard extends HTMLElement{
+    constructor(){
+        super();
+
+        this.attachShadow({mode: 'open'});
+        const link = document.querySelector(`link[rel=import][href*="tutor-card.html"]`)
+        const template = link.import.querySelector('#template');
+        const html = [...template.content.childNodes].reduce( (memo,t) => t.outerHTML?memo += t.outerHTML:memo ,"");
+        this.shadowRoot.innerHTML = html;
+
+        this.addEventListener('click', () => {
+            let tutorSelected = new CustomEvent('tutorSelected', {
+                bubbles: true,
+                detail: {
+                    element: this
+                }
+            });
+            this.dispatchEvent(tutorSelected);
+        });
+    }
+
+    static get observedAttributes() {
+        return  [ 'nome', 'escola' ]
+    };
+
+    _update(){
+        if(this.parentNode){
+            this.shadowRoot.querySelector(".nome").innerHTML = `${(this.getAttribute('nome') && this.getAttribute('nome').split(" ")[0] ) || "Nome do Tutor"}`;
+            this.shadowRoot.querySelector(".escola").innerHTML = `${this.getAttribute('escola') || "Escola do Tutor"}`;
+        }
+    }
+
+    attributeChangedCallback(name, oldValue, newValue){
+        this._update();
+    }
+
+    connectedCallback(){
+
+        this._update();
+    }
+
+}
+
+window.customElements.define("tutor-card", TutorCard);
+</script>

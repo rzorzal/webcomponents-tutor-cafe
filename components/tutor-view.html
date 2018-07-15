@@ -1,0 +1,78 @@
+<template id="template">
+    <style>
+        :host h2{
+            margin: 0;
+        }
+        :host .container{
+            display: flex;
+            flex-direction: row;
+        }
+        :host img{
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            width: auto;
+            height: 200px;
+            align-self: center;
+        }
+        :host .info{
+            display: inline-block;
+        }
+        :host .descricao-container{
+            display: inline-block;
+            padding: 10px;
+        }
+
+        :host .descricao-container p{
+            margin: 0;
+        }
+    </style>
+    <div class="container">
+        <div class="info">
+            <img class="foto" src="" />
+            <h2 class="nome" ></h2>
+            <small class="escola" ></small>
+        </div>
+        <div class="descricao-container">
+            <p class="descricao"></p>
+        </div>
+
+    </div>
+</template>
+
+<script type="text/javascript">
+
+    class TutorView extends HTMLElement{
+        constructor(){
+            super();
+            this.attachShadow({mode: 'open'});
+            const link = document.querySelector(`link[rel=import][href*="tutor-view.html"]`)
+            const template = link.import.querySelector('#template');
+            const html = [...template.content.childNodes].reduce( (memo,t) => t.outerHTML?memo += t.outerHTML:memo ,"");
+            this.shadowRoot.innerHTML = html;
+        }
+
+        _update(){
+            this.shadowRoot.querySelector(".foto").setAttribute('src', `${ this.getAttribute('foto')}`);
+            this.shadowRoot.querySelector(".nome").innerHTML = `${ this.getAttribute('nome')}`;
+            this.shadowRoot.querySelector(".escola").innerHTML = `${ this.getAttribute('escola')}`;
+            this.shadowRoot.querySelector(".descricao").innerHTML = `${ this.getAttribute('descricao')}`;
+        }
+
+        static get observedAttributes() {
+            return  [ 'nome', 'escola', 'descricao', 'foto' ]
+        };
+
+        attributeChangedCallback(name, oldValue, newValue){
+            this._update();
+        }
+
+        connectedCallback(){
+
+        }
+
+    }
+
+    window.customElements.define("tutor-view", TutorView);
+
+
+</script>

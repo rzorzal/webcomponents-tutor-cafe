@@ -1,0 +1,27 @@
+<template id="template">
+    <header>
+        <h1>Conheça os Tutores Next_U Brasil</h1>
+    </header>
+</template>
+
+<script type="text/javascript">
+    class TutorHeader extends HTMLElement{
+        constructor(){
+            super();
+            this.attachShadow({mode: 'open'});
+            
+            const link = document.querySelector(`link[rel=import][href*="tutor-header.html"]`)
+            const template = link.import.querySelector('#template');
+            const html = [...template.content.childNodes].reduce( (memo,t) => t.outerHTML?memo += t.outerHTML:memo ,"");
+            this.shadowRoot.innerHTML = html;
+        }
+
+        connectedCallback(){
+
+        }
+
+    }
+
+    window.customElements.define("tutor-header", TutorHeader);
+
+</script>

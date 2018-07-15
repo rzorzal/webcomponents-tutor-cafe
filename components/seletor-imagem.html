@@ -1,0 +1,66 @@
+<template id="template">
+    <style >
+        :host{
+            display: block;
+        }
+    </style>
+    <div >
+        <input class="image-input" type="file" accept="image/*" >
+        <img src="" alt="IMAGEM SELECIONADA">
+    </div>
+</template>
+
+<script type="text/javascript">
+    class ImageSeletorPreview extends HTMLElement{
+
+        static get observedAttributes() {
+            return  [  ]
+        };
+
+        constructor(){
+            super();
+            this.attachShadow({mode: 'open'});
+
+            const link = document.querySelector(`link[rel=import][href*="seletor-imagem.html"]`)
+            const template = link.import.querySelector('#template');
+            const html = [...template.content.childNodes].reduce( (memo,t) => t.outerHTML?memo += t.outerHTML:memo ,"");
+            this.shadowRoot.innerHTML = html;
+
+            this.input = this.shadowRoot.querySelector('.image-input');
+            this.img = this.shadowRoot.querySelector('img');
+            this.onImageChange = this.onImageChange.bind(this);
+        }
+
+
+        onImageChange(e){
+            let img = this.img;
+            let input = this.input;
+
+            let reader = new FileReader();
+
+            reader.onload = function (e) {
+                img.src = e.target.result;
+            }
+
+            reader.readAsDataURL(input.files[0]);
+        }
+
+
+
+        connectedCallback(){
+            this.input.addEventListener('change', this.onImageChange);
+        }
+
+        disconnectedCallback(){
+            this.input.removeEventListener('change', this.onImageChange, false);
+        }
+
+        attributeChangedCallback(name, oldValue, newValue){
+
+        }
+
+    }
+
+    window.customElements.define("seletor-imagem", ImageSeletorPreview);
+
+</script>

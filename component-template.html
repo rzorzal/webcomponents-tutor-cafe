@@ -1,0 +1,45 @@
+<template id="template">
+    <style >
+        :host{
+            display: block;
+        }
+    </style>
+    <div >
+
+    </div>
+</template>
+
+<script type="text/javascript">
+    class Component extends HTMLElement{
+
+        static get observedAttributes() {
+            return  [  ]
+        };
+
+        constructor(){
+            super();
+            this.attachShadow({mode: 'open'});
+
+            const link = document.querySelector(`link[rel=import][href*="component-template.html"]`)
+            const template = link.import.querySelector('#template');
+            const html = [...template.content.childNodes].reduce( (memo,t) => t.outerHTML?memo += t.outerHTML:memo ,"");
+            this.shadowRoot.innerHTML = html;
+        }
+
+        connectedCallback(){
+
+        }
+
+        disconnectedCallback(){
+
+        }
+
+        attributeChangedCallback(name, oldValue, newValue){
+
+        }
+
+    }
+
+    window.customElements.define("component-template", Component);
+
+</script>

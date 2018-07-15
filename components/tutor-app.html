@@ -1,0 +1,30 @@
+<template id="template">
+    <tutor-header></tutor-header>
+
+    <div class="container" style="height: 60vh;">
+        <tutor-list></tutor-list>
+    </div>
+</template>
+
+<script type="text/javascript">
+    class TutorApp extends HTMLElement{
+        constructor(){
+            super();
+            this.attachShadow({mode: 'open'});
+
+            const link = document.querySelector(`link[rel=import][href*="tutor-app.html"]`)
+            const template = link.import.querySelector('#template');
+            const html = [...template.content.childNodes].reduce( (memo,t) => t.outerHTML?memo += t.outerHTML:memo ,"");
+            this.shadowRoot.innerHTML = html;
+        }
+
+        async connectedCallback(){
+            await importWebComponents("./components/tutor-list.html");
+            await importWebComponents("./components/tutor-header.html");
+        }
+
+    }
+
+    window.customElements.define("tutor-app", TutorApp);
+
+</script>

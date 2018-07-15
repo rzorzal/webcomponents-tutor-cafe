@@ -1,0 +1,81 @@
+<template id="template">
+    <style>
+        :host {
+            display: flex;
+            flex-direction: row;
+        }
+        :host div.tutor-list{
+            display: flex;
+            align-items: baseline;
+            flex-direction: column;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+        @media (max-width: 900px) {
+            :host{
+                flex-direction: column;
+            }
+
+            :host div.tutor-list{
+                flex-direction: row;
+            }
+        }
+        :host div.tutor-selected{
+            width: 100%;
+            height: auto;
+            min-height: 10vh;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+        }
+    </style>
+    <div class="tutor-list">
+
+    </div>
+    <div class="tutor-selected">
+
+    </div>
+</template>
+
+<script type="text/javascript">
+    class TutorList extends HTMLElement{
+        constructor(){
+            super();
+            this.attachShadow({mode: 'open'});
+
+            const link = document.querySelector(`link[rel=import][href*="tutor-list.html"]`)
+            const template = link.import.querySelector('#template');
+            const html = [...template.content.childNodes].reduce( (memo,t) => t.outerHTML?memo += t.outerHTML:memo ,"");
+            this.shadowRoot.innerHTML = html;
+
+            this.shadowRoot.addEventListener('tutorSelected', this.onTutorSelected.bind(this));
+        }
+
+        get tutores(){
+            return [
+                {nome: "Rodrigo", escola: "Tutor Web", descricao: "Teste", foto: "https://upload.wikimedia.org/wikipedia/commons/1/1e/Default-avatar.jpg"},
+                {nome: "Ricardo Zorzal Davila", descricao: "Teste", escola: "Tutor Web", foto:"https://sprogsyd.dk/wp-content/uploads/2017/07/476085198-1.jpg"},
+                {nome: "Fábio", escola: "Tutor Web", descricao: "Teste", foto: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTLzBjiaIcCsuNPq97DmpJiDmpKwv8-ZA2UZA-PTCR_HKbmdrF7"},
+                {nome: "Fred", escola: "Tutor Web", descricao: "Teste", foto: "https://pittwateranimalhospital.com.au/wp-content/uploads/2018/02/AVATAR.png"},
+            ]
+        }
+
+        onTutorSelected(evt){
+            let tutorViewSelected = evt.detail.element;
+            let elementView = this.shadowRoot.querySelector(".tutor-selected");
+            elementView.innerHTML = `<tutor-view descricao="${tutorViewSelected.getAttribute("descricao")}" foto="${tutorViewSelected.getAttribute("foto")}" nome="${tutorViewSelected.getAttribute("nome")}" escola="${tutorViewSelected.getAttribute("escola")}"></tutor-view>`
+        }
+
+        async connectedCallback(){
+            await importWebComponents("./components/tutor-card.html");
+            await importWebComponents("./components/tutor-view.html");
+
+            const tutores = this.tutores.map(t => `<tutor-card descricao="${t.descricao}" foto="${t.foto}" nome="${t.nome}" escola="${t.escola}"></tutor-card>`).join("\n");
+            this.shadowRoot.querySelector(".tutor-list").innerHTML  = tutores;
+        }
+
+    }
+
+    window.customElements.define("tutor-list", TutorList);
+
+</script>
